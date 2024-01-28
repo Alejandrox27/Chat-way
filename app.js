@@ -1,3 +1,9 @@
+const btnEnter = document.getElementById("btnEnter")
+const btnExit = document.getElementById("btnExit")
+const chat = document.getElementById("chat")
+const form = document.getElementById("form")
+const btnSend = document.getElementById("btnSend")
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js'
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js'
@@ -17,4 +23,13 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
+
+btnEnter.addEventListener('click', async() => {
+  try{
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    console.log(result)
+  }catch(error){
+    console.log(error)
+  }
+})
