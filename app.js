@@ -5,7 +5,7 @@ const form = document.getElementById("form")
 const btnSend = document.getElementById("btnSend")
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js'
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js'
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js'
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -24,6 +24,30 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
+const removeElement = (element) => {
+  element.classList.add("d-none")
+}
+
+const visualizeElement = (element) => {
+  element.classList.remove("d-none")
+}
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    visualizeElement(btnExit)
+    removeElement(btnEnter)
+    visualizeElement(form)
+    visualizeElement(chat)
+    // ...
+  } else {
+    removeElement(btnExit)
+    visualizeElement(btnEnter)
+    removeElement(form)
+    removeElement(chat)
+  }
+});
+
+
 btnEnter.addEventListener('click', async() => {
   try{
     const provider = new GoogleAuthProvider();
@@ -33,3 +57,12 @@ btnEnter.addEventListener('click', async() => {
     console.log(error)
   }
 })
+
+btnExit.addEventListener("click", async() => {
+  try{
+    await signOut(auth)
+
+  }catch(error){
+    console.log(error)
+  }
+}) 
