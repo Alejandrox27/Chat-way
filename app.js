@@ -2,12 +2,11 @@ const btnEnter = document.getElementById("btnEnter")
 const btnExit = document.getElementById("btnExit")
 const chat = document.getElementById("chat")
 const form = document.getElementById("form")
-const btnSend = document.getElementById("btnSend")
 const msgEnter = document.getElementById("msgEnter")
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js'
-import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js'
+import { getFirestore, collection, addDoc, query, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js'
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -24,6 +23,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
 const removeElement = (element) => {
   element.classList.add("d-none")
@@ -40,6 +40,21 @@ onAuthStateChanged(auth, (user) => {
     visualizeElement(form)
     visualizeElement(chat)
     removeElement(msgEnter)
+
+    const q = query(collection(db, "chats"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === "added") {
+            console.log("New message: ", change.doc.data());
+        }/*
+        if (change.type === "modified") {
+            console.log("Modified city: ", change.doc.data());
+        }
+        if (change.type === "removed") {
+            console.log("Removed city: ", change.doc.data());
+        }*/
+      });
+    });
     // ...
   } else {
     removeElement(btnExit)
@@ -65,7 +80,6 @@ btnEnter.addEventListener('click', async() => {
 btnExit.addEventListener("click", async() => {
   try{
     await signOut(auth)
-
   }catch(error){
     console.log(error)
   }
@@ -73,8 +87,19 @@ btnExit.addEventListener("click", async() => {
 
 form.addEventListener("submit", async(e) => {
   e.preventDefault();
+
+  if(!form.msg.value.trim()){
+    form.msg.value = "";
+    form.msg.focus();
+    return console.log('you have to write something')
+  }
+
   try {
-    console.log(form.msg.value)
+    await addDoc(collection(db, "chats"), {
+      msg: form.msg.value.trim(),
+      uid: auth.currentUser.uid,
+      date: Date.now()
+    })
   } catch (error) {
     console.log(error)
   }
