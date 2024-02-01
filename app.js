@@ -3,6 +3,7 @@ const btnExit = document.getElementById("btnExit")
 const chat = document.getElementById("chat")
 const form = document.getElementById("form")
 const btnSend = document.getElementById("btnSend")
+const msgEnter = document.getElementById("msgEnter")
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js'
@@ -38,12 +39,15 @@ onAuthStateChanged(auth, (user) => {
     removeElement(btnEnter)
     visualizeElement(form)
     visualizeElement(chat)
+    removeElement(msgEnter)
     // ...
   } else {
     removeElement(btnExit)
     visualizeElement(btnEnter)
     removeElement(form)
     removeElement(chat)
+    visualizeElement(msgEnter)
+
   }
 });
 
@@ -66,3 +70,12 @@ btnExit.addEventListener("click", async() => {
     console.log(error)
   }
 }) 
+
+form.addEventListener("submit", async(e) => {
+  e.preventDefault();
+  try {
+    console.log(form.msg.value)
+  } catch (error) {
+    console.log(error)
+  }
+})

@@ -18,6 +18,9 @@
         </div>
     </nav>
 
+
+    <p class="lead my-5 text-center d-none" id="msgEnter">To see the chats you have to auth session</p>
+
     <main class="container mt-2" id="chat">
         <div class="container mt-2">
             <span class="badge bg-secondary">Text</span>
@@ -28,8 +31,8 @@
     </main>
 
     <form class="container fixed-bottom mb-2" id="form">
-        <input type="text" class="form-control mb-2" placeholder="Message" name="msg">
-        <button class="btn btn-dark w-100" id="btnSend">Send</button>
+        <input type="text" class="form-control mb-2" placeholder="Message" name="msg" value="">
+        <button class="btn btn-dark w-100" id="btnSend" type="submit">Send</button>
     </form>
 
     <script src="./app.js" type="module"></script>
