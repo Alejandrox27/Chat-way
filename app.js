@@ -2,11 +2,13 @@ const btnEnter = document.getElementById("btnEnter")
 const btnExit = document.getElementById("btnExit")
 const chat = document.getElementById("chat")
 const form = document.getElementById("form")
+const btnSend = document.getElementById("btnSend")
 const msgEnter = document.getElementById("msgEnter")
+const msgTemplate = document.getElementById('msgTemplate')
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js'
-import { getFirestore, collection, addDoc, query, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js'
+import { getFirestore, collection, addDoc, query, onSnapshot, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js'
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -33,6 +35,8 @@ const visualizeElement = (element) => {
   element.classList.remove("d-none")
 }
 
+let unsubscribe;
+
 onAuthStateChanged(auth, (user) => {
   if (user) {
     visualizeElement(btnExit)
@@ -40,12 +44,25 @@ onAuthStateChanged(auth, (user) => {
     visualizeElement(form)
     visualizeElement(chat)
     removeElement(msgEnter)
-
-    const q = query(collection(db, "chats"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
+    
+    const q = query(collection(db, "chats"), orderBy('date'));
+    chat.innerHTML = ``;
+    unsubscribe = onSnapshot(q, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === "added") {
             console.log("New message: ", change.doc.data());
+
+            //manipulate template
+            const clone = msgTemplate.content.cloneNode(true);
+            clone.querySelector('div span').textContent = change.doc.data().msg;
+            if(user.uid === change.doc.data().uid){
+              clone.querySelector('div span').classList.add('bg-success')
+              clone.querySelector('div').classList.add('text-end')
+            }else{
+              clone.querySelector('div span').classList.add('bg-secondary')
+            }
+            chat.append(clone);
+
         }/*
         if (change.type === "modified") {
             console.log("Modified city: ", change.doc.data());
@@ -62,6 +79,10 @@ onAuthStateChanged(auth, (user) => {
     removeElement(form)
     removeElement(chat)
     visualizeElement(msgEnter)
+
+    if(unsubscribe){
+      unsubscribe();
+    }
 
   }
 });
@@ -94,13 +115,19 @@ form.addEventListener("submit", async(e) => {
     return console.log('you have to write something')
   }
 
+  const message = form.msg.value.trim();
+  form.msg.value = "";
   try {
+    btnSend.disabled = true;
     await addDoc(collection(db, "chats"), {
-      msg: form.msg.value.trim(),
+      msg: message,
       uid: auth.currentUser.uid,
       date: Date.now()
     })
+    
   } catch (error) {
     console.log(error)
+  } finally {
+    btnSend.disabled = false;
   }
 })
