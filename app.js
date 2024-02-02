@@ -62,8 +62,9 @@ onAuthStateChanged(auth, (user) => {
               clone.querySelector('div span').classList.add('bg-secondary')
             }
             chat.append(clone);
-
-        }/*
+        }
+        chat.scrollTop = chat.scrollHeight;
+        /*
         if (change.type === "modified") {
             console.log("Modified city: ", change.doc.data());
         }
