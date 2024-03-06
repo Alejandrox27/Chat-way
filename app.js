@@ -14,12 +14,12 @@ import { getFirestore, collection, addDoc, query, onSnapshot, orderBy } from 'ht
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCLUZ2wZxw3VfU1VWNgKAnpcSEtY8-0fiU",
+  apiKey: "(your-api-key)",
   authDomain: "firechat-bootstrap-b07e1.firebaseapp.com",
   projectId: "firechat-bootstrap-b07e1",
   storageBucket: "firechat-bootstrap-b07e1.appspot.com",
   messagingSenderId: "1078533434003",
-  appId: "1:1078533434003:web:34bbe395eab1a2dfffbb66"
+  appId: "(your-app-id)"
 };
 
 // Initialize Firebase
